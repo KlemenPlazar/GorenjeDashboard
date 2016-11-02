@@ -1,0 +1,351 @@
+﻿@model GorenjeDashboard.Models.OrderViewModel
+
+@{
+    ViewBag.Title = "Pregled";
+}
+
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">@ViewBag.Title</h1>
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-4 col-md-6">
+            <div class="panel panel-green">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-thumbs-up fa-5x"></i>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                            <div class="huge">@Model.Orders.Count(o => o.State == GorenjeDashboard.Models.OrderState.Done)</div>
+                            <div>Opravljeni!</div>
+                        </div>
+                    </div>
+                </div>
+                <a href="#done">
+                    <div class="panel-footer">
+                        <span class="pull-left">Poglej</span>
+                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                        <div class="clearfix"></div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="panel panel-yellow">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-pencil-square-o fa-5x"></i>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                            <div class="huge">@Model.Orders.Count(o => o.State == GorenjeDashboard.Models.OrderState.TODO)</div>
+                            <div>V čakanju!</div>
+                        </div>
+                    </div>
+                </div>
+                <a href="#todo">
+                    <div class="panel-footer">
+                        <span class="pull-left">Poglej</span>
+                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                        <div class="clearfix"></div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6">
+            <div class="panel panel-red">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-thumbs-down fa-5x"></i>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                            <div class="huge">@Model.Orders.Count(o => o.State == GorenjeDashboard.Models.OrderState.Canceled)</div>
+                            <div>Preklicani!</div>
+                        </div>
+                    </div>
+                </div>
+                <a href="#canceled">
+                    <div class="panel-footer">
+                        <span class="pull-left">Poglej</span>
+                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                        <div class="clearfix"></div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+<!-- Tabela v čakanju -->
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <i class="fa fa-bar-chart-o fa-fw"></i> Seznam potrebnih stvari
+    </div>
+    <!-- /.panel-heading -->
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="table-responsive" id="todo">
+                    @{
+                        if (Model.Orders.Any(o => o.State == GorenjeDashboard.Models.OrderState.TODO))
+                        {
+                            <table class="table table-bordered table-hover table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Čas oddaje</th>
+                                        <th>Stroj</th>
+                                        <th>Paleta</th>
+                                        <th>Naziv izdelka</th>
+                                        <th>Šifra</th>
+                                        <th>Sestava</th>
+                                        <th>Prioriteta</th>
+                                        <th class="text-center">Zaključi</th>
+                                        <th class="text-center">Prekliči</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var order in Model.Orders.Where(o => o.State == GorenjeDashboard.Models.OrderState.TODO))
+                                    {
+                                        <tr>
+                                            <td>@order.TimeAdded.ToShortTimeString()</td>
+                                            <td>@order.Machine.Machine</td>
+                                            <td>@order.Pallete.PalleteName</td>
+                                            <td>@order.Material.Material</td>
+                                            <td>@order.Material.MaterialCode</td>
+                                            <td>@order.Material.MaterialStructure</td>
+                                            <td>@Html.Raw(order.Priority)</td>
+                                            <td class="text-center"><p data-placement="auto" data-toggle="tooltip" title="Opravljeno"><button class="btn btn-success confirmation" data-name="@order.Material.Material" data-id="@order.ID" data-title="Edit" data-toggle="modal" data-target="#confirmationModal"><span class="glyphicon glyphicon-ok"></span></button></p></td>
+                                            <td class="text-center"><p data-placement="auto" data-toggle="tooltip" title="Prekliči"><button class="btn btn-danger cancel" data-name="@order.Material.Material" data-id="@order.ID" data-title="Delete" data-toggle="modal" data-target="#cancelnModal"><span class="glyphicon glyphicon-remove"></span></button></p></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <p>Trenutno ni nobenenega naročila v čakanju</p>
+                        }
+                    }
+                   
+                </div>
+                <!-- /.table-responsive -->
+            </div>
+
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.panel-body -->
+</div>
+
+<!-- Tabela opravljenih -->
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <i class="fa fa-bar-chart-o fa-fw"></i> Seznam opravljenih
+    </div>
+    <!-- /.panel-heading -->
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="table-responsive" id="done">
+                @{
+                    if (Model.Orders.Any(o => o.State == GorenjeDashboard.Models.OrderState.Done))
+                    {
+                    <table class="table table-bordered table-hover table-striped">
+                        <thead>
+                            <tr>
+                                <th>#ID</th>
+                                <th>Stroj</th>
+                                <th>Naziv izdelka</th>
+                                <th>Šifra</th>
+                                <th>Sestava</th>
+                                <th class="text-center">Razveljavi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model.Orders.Where(o => o.State == GorenjeDashboard.Models.OrderState.Done))
+                            {
+
+                                <tr>
+                                    <td>@order.ID</td>
+                                    <td>@order.Machine.Machine</td>
+                                    <td>@order.Material.Material</td>
+                                    <td>@order.Material.MaterialCode</td>
+                                    <td>@order.Material.MaterialStructure</td>
+                                    <td class="text-center"><p data-placement="auto" data-toggle="tooltip" title="Prekliči"><button class="btn btn-danger undo" data-title="Delete" data-toggle="modal" data-name="@order.Material.Material" data-id="@order.ID" data-target="#undoModal"><span class="glyphicon glyphicon-repeat"></span></button></p></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    }
+                    else
+                    {
+                        <p>Trenutno ni nobeno naročilo zaključeno</p>
+                    }
+                }
+                </div>
+                <!-- /.table-responsive -->
+            </div>
+
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.panel-body -->
+</div>
+
+<!-- Tabela preklicanih -->
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <i class="fa fa-bar-chart-o fa-fw"></i> Seznam preklicanih stvari
+    </div>
+    <!-- /.panel-heading -->
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="table-responsive" id="canceled">
+            @{
+                if (Model.Orders.Any(o => o.State == GorenjeDashboard.Models.OrderState.Canceled))
+                {
+                    <table class="table table-bordered table-hover table-striped">
+                        <thead>
+                            <tr>
+                                <th>#ID</th>
+                                <th>Stroj</th>
+                                <th>Naziv izdelka</th>
+                                <th>Šifra</th>
+                                <th>Sestava</th>
+                                <th class="text-center">Razveljavi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model.Orders.Where(o => o.State == GorenjeDashboard.Models.OrderState.Canceled))
+                            {
+                                <tr>
+                                    <td>@order.ID</td>
+                                    <td>@order.Machine.Machine</td>
+                                    <td>@order.Material.Material</td>
+                                    <td>@order.Material.MaterialCode</td>
+                                    <td>@order.Material.MaterialStructure</td>
+                                    <td class="text-center"><p data-placement="auto" data-toggle="tooltip" title="Prekliči"><button class="btn btn-danger undo" data-title="Delete" data-toggle="modal" data-name="@order.Material.Material" data-id="@order.ID" data-target="#undoModal"><span class="glyphicon glyphicon-repeat"></span></button></p></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p>Trenutno ni nobeno naročilo preklicano</p>
+                }
+            }
+                </div>
+                <!-- /.table-responsive -->
+            </div>
+
+        </div>
+        <!-- /.row -->
+    </div>
+    <!-- /.panel-body -->
+</div>
+
+<!-- Modal confirmation -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel1" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel1">Potrditev zaključitve naročila</h4>
+            </div>
+            <div id="conirmationData" class="modal-body">
+
+            </div>
+            <form action="/Home/CompleteTask" method="post">
+                <input type="hidden" name="orderID" id="orderID" />
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Prekliči</button>
+                    <button type="submit" class="btn btn-primary">Zaključi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Cancel -->
+<div class="modal fade" id="cancelnModal" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel1" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel1">Potrditev preklica naročila</h4>
+            </div>
+            <div id="cancelData" class="modal-body">
+
+            </div>
+            <form action="/Home/CancelTask" method="post">
+                <input type="hidden" name="orderID" id="cancelOrderID" />
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Zapri</button>
+                    <button type="submit" class="btn btn-primary">Zaključi preklic</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Undo -->
+<div class="modal fade" id="undoModal" tabindex="-1" role="dialog"
+     aria-labelledby="myModalLabel1" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel1">Potrditev razvlejavitve naročila</h4>
+            </div>
+            <div id="undoData" class="modal-body">
+
+            </div>
+            <form action="/Home/UndoTask" method="post">
+                <input type="hidden" name="orderID" id="undoOrderID" />
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Zapri</button>
+                    <button type="submit" class="btn btn-primary">Razveljavi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).on("click", ".confirmation", function () {
+        var materialName = $(this).data('name');
+        var materialID = $(this).data('id');
+        $("#orderID").val(materialID);
+        $("#conirmationData").html("Ali ste prepričani da želite zaključiti dostavo izdelka: " + materialName);
+    });
+
+    $(document).on("click", ".cancel", function () {
+        var materialName = $(this).data('name');
+        var materialID = $(this).data('id');
+        $("#cancelOrderID").val(materialID);
+        $("#cancelData").html("Ali ste prepričani da želite preklicati dostavo izdelka: " + materialName);
+    });
+
+    $(document).on("click", ".undo", function () {
+        var materialName = $(this).data('name');
+        var materialID = $(this).data('id');
+        $("#undoOrderID").val(materialID);
+        $("#undoData").html("Ali ste prepričani da želite razveljaviti izdelek: " + materialName);
+    });
+</script>

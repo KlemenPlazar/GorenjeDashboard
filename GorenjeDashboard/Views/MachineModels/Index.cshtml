@@ -1,0 +1,33 @@
+﻿@model IEnumerable<GorenjeDashboard.Models.MachineModel>
+
+@{
+    ViewBag.Title = "Stroji";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Machine)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Machine)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.MachineId }) |
+            @Html.ActionLink("Details", "Details", new { id=item.MachineId }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.MachineId })
+        </td>
+    </tr>
+}
+
+</table>
