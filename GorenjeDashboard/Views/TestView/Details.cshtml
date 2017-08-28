@@ -1,0 +1,42 @@
+﻿@model GorenjeDashboard.Models.MaterialModel
+
+@{
+    ViewBag.Title = "Podrobnosti";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div>
+    <h4>Material</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Material)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Material)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.MaterialCode)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.MaterialCode)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.MaterialStructure)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.MaterialStructure)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.MaterialId }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
